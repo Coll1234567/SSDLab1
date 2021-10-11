@@ -12,6 +12,8 @@ namespace SSDLab1.Data
 {
     public static class DbInitializer
     {
+
+        public static AppSecrets AppSecrets { get; set; }
         public static async Task<int> SeedUsersAndRoles(IServiceProvider serviceProvider)
         {
             // create the database if it doesn't exist
@@ -59,6 +61,42 @@ namespace SSDLab1.Data
 
         private static async Task<int> SeedUsers(UserManager<ApplicationUser> userManager)
         {
+            // Create Admin User
+            var adminUser = new ApplicationUser
+            {
+                UserName = "manager@mohawkcollege.ca",
+                Email = "manager@mohawkcollege.ca",
+                FirstName = "John",
+                LastName = "Manager",
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(adminUser, AppSecrets.AdminPwd);
+            if (!result.Succeeded)
+                return 1;  // should log an error message here
+
+            // Assign user to Admin role
+            result = await userManager.AddToRoleAsync(adminUser, "Manager");
+            if (!result.Succeeded)
+                return 2;  // should log an error message here
+
+            // Create Member User
+            var memberUser = new ApplicationUser
+            {
+                UserName = "player@mohawkcollege.ca",
+                Email = "player@mohawkcollege.ca",
+                FirstName = "John",
+                LastName = "Player",
+                EmailConfirmed = true
+            };
+            result = await userManager.CreateAsync(memberUser, AppSecrets.MemberPwd);
+            if (!result.Succeeded)
+                return 3;  // should log an error message here
+
+            // Assign user to Member role
+            result = await userManager.AddToRoleAsync(memberUser, "Player");
+            if (!result.Succeeded)
+                return 4;  // should log an error message here
+
             return 0;
         }
     }

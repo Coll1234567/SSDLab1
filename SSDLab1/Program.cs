@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SSDLab1.Data;
+using SSDLab1.Models;
 
 namespace SSDLab1
 {
@@ -16,6 +17,15 @@ namespace SSDLab1
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            var configuration = host.Services.GetService<IConfiguration>();
+            var hosting = host.Services.GetService<IWebHostEnvironment>();
+
+          //  if (hosting.IsDevelopment())
+           // {
+                var secrets = configuration.GetSection("Secrets").Get<AppSecrets>();
+                DbInitializer.AppSecrets = secrets;
+          //  }
+
             using (var scope = host.Services.CreateScope())
                 DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
             host.Run();
