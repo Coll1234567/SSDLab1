@@ -18,13 +18,8 @@ namespace SSDLab1
         {
             var host = CreateHostBuilder(args).Build();
             var configuration = host.Services.GetService<IConfiguration>();
-            var hosting = host.Services.GetService<IWebHostEnvironment>();
-
-          //  if (hosting.IsDevelopment())
-           // {
-                var secrets = configuration.GetSection("Secrets").Get<AppSecrets>();
-                DbInitializer.AppSecrets = secrets;
-          //  }
+            AppSecrets secrets = configuration.GetSection("Secrets").Get<AppSecrets>();
+            DbInitializer.AppSecrets = secrets;
 
             using (var scope = host.Services.CreateScope())
                 DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
